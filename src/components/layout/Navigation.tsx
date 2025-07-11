@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Truck, Phone, Mail } from "lucide-react";
+import { Menu, Truck, Phone, Mail, User, LogOut } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -51,9 +53,29 @@ export const Navigation = () => {
               <Phone className="h-4 w-4" />
               <span>(555) 123-4567</span>
             </div>
-            <Button variant="hero" size="sm" asChild>
-              <Link to="/quote">Get Free Quote</Link>
-            </Button>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/dashboard">
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/auth">Sign In</Link>
+                </Button>
+                <Button variant="hero" size="sm" asChild>
+                  <Link to="/quote">Get Free Quote</Link>
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Mobile Menu */}
@@ -94,9 +116,29 @@ export const Navigation = () => {
                     <Mail className="h-4 w-4" />
                     <span>info@moveease.com</span>
                   </div>
-                  <Button variant="hero" className="w-full" asChild onClick={() => setIsOpen(false)}>
-                    <Link to="/quote">Get Free Quote</Link>
-                  </Button>
+                  {user ? (
+                    <div className="space-y-2">
+                      <Button variant="ghost" className="w-full justify-start" asChild onClick={() => setIsOpen(false)}>
+                        <Link to="/dashboard">
+                          <User className="h-4 w-4 mr-2" />
+                          Dashboard
+                        </Link>
+                      </Button>
+                      <Button variant="outline" className="w-full" onClick={() => { signOut(); setIsOpen(false); }}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Button variant="ghost" className="w-full" asChild onClick={() => setIsOpen(false)}>
+                        <Link to="/auth">Sign In</Link>
+                      </Button>
+                      <Button variant="hero" className="w-full" asChild onClick={() => setIsOpen(false)}>
+                        <Link to="/quote">Get Free Quote</Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </SheetContent>
